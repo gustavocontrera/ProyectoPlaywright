@@ -19,6 +19,29 @@ test('get started link', async ({ page }) => {
 
 test('test', async ({ page }) => {
 
-  await page.goto('https://mercadolibre.com.ar/');
+  // https://tiendamia.com.ar/   https://www.fravega.com/
+  await page.goto('https://mercadolibre.com.ar/')
+  await page.locator("input[id='cb1-edit']").fill('linterna')
+  await page.keyboard.press('Enter')
 
+  await expect(page.locator("//ol[contains(@class, 'ui-search-layout')]")).toBeVisible({ timeout: 10000 })
+  //await page.pause()
+
+  const titles = await page.locator("//ol[contains(@class, 'ui-search-layout')]//li//h3").allInnerTexts()
+
+  console.log('the total number of result is:',  titles.length)
+
+  for(let title of titles){
+      console.log('the title is: ', title)
+  }
+
+});
+
+//------------------------------
+
+test("Validar título de la página Free Range Testers", async ({ page }) => {
+    await test.step("Estando yo en la web principal www.freerangetesters.com", async () => {
+      await page.goto('https://www.freerangetesters.com');
+      await expect(page).toHaveTitle('Free Range Testers');
+    });
 });
