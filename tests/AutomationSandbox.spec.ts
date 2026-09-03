@@ -10,7 +10,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
     test.describe('Acciones en el Automation Sandbox', () => {
         test('Click en Botón ID Dinámico', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
 
             await test.step('Puedo hacer click en el botón con ID dinámico', async () => {
@@ -23,7 +23,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Lleno un campo de texto en Automation @Sandbox', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Puedo ingresar texto en el campo Un Aburrido Texto', async () => {
                 await expect(page.getByPlaceholder('Ingresá texto'), 'El campo de texto no admite edición').toBeEditable();
@@ -38,7 +38,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
         test('Puedo seleccionar y deseleccionar un checkbox en el @Sandbox', async ({ page }) => {
 
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Puedo seleccionar el checkbox para Pasta', async () => {
                 const sandbox = new SandboxPage(page);
@@ -59,7 +59,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Puedo seleccionar Radio Buttons', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Puedo seleccionar el Radio Button para No', async () => {
                 await page.getByLabel('No').check();
@@ -72,7 +72,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Puedo seleccionar un item del Dropdown', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Seleccion un deporte del dropdown', async () => {
                 await page.getByLabel('Dropdown').selectOption('Tennis');
@@ -82,12 +82,12 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         })
 
-        test('Los items del dropdown son los esperados', async ({ page }) => {
+        test('Validar los items del dropdown', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
                 await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Valido que la lista del dropdown contiene los deportes esperados', async () => {
-                const deportes = ['Fútbol', 'Tennis', 'Basketball']
+                const deportes = ['Fútbol', 'Tennis', 'Basketball', 'Bochas']
 
                 for (let opcion of deportes) {
                     const element = await page.$(`select#formBasicSelect > option:is(:text("${opcion}"))`);
@@ -105,7 +105,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Valido la columna Nombres de la tabla estática', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
 
             await test.step('Puedo validar los elementos para la columna Nombre de la tabla estática', async () => {
@@ -123,7 +123,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Valido que todos los valores cambian en la tabla dinámica luego de un reload', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
 
             await test.step('Valido que los valores cambiaron al hacer un reload a la web', async () => {
@@ -148,7 +148,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Ejemplo de Soft Assertions', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Valido que todos los elementos de los checkboxes son los correctos', async () => {
                 await expect.soft(page.getByText('Pizza 🍕'), 'No se encontró el elemento Pizza 🍕').toBeVisible();
@@ -168,7 +168,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
                 description: 'El usuario puede seleccionar un día del dropdown Días de Semana '
             });
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Selecciono un día de la semana del dropdown', async () => {
                 await page.getByRole('button', { name: 'Día de la semana' }).click();
@@ -182,7 +182,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
         test('Puedo subir archivos a Automation Sandbox - NO IMPLEMENTADO EN PROD', async ({ page }) => {
             test.fixme();
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Agrego archivos para ser subidos', async () => {
                 await page.getByLabel('Upload file').setInputFiles(['pathAlArchivo.pdf', 'Invoice1.pdf', 'Invoice2.pdf']);
@@ -195,7 +195,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test.fixme('Puedo hacer un Drag and Drop de elementos en Automation Sandbox - NO IMPLEMENTADO EN PROD', async ({ page }) => {
             await test.step('Dado que navego al Sandbox de Automation de Free Range Testers', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
             await test.step('Selecciono un día de la semana del dropdown', async () => {
                 await page.getByTestId('DragFrom').dragTo(page.getByTestId('DragTo'));
@@ -207,7 +207,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
         test('Validando dentro de un popup', async ({ page }) => {
             await test.step('Dado que navego al sandbox', async () => {
-                await page.goto('');
+                await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/');
             })
 
             await test.step('Cuando hago click en el botón popup', async () => {
