@@ -19,6 +19,7 @@ Este manual consolida todas las consultas, conceptos de arquitectura, comandos, 
    - [2.4 Ubicación del botón "Run All Tests" en VS Code](#24-ubicación-del-botón-run-all-tests-en-vs-code)
    - [2.5 Terminal integrada de VS Code](#25-terminal-integrada-de-vs-code)
    - [2.6 Evitar que el navegador se cierre al terminar un test](#26-evitar-que-el-navegador-se-cierre-al-terminar-un-test)
+   - [2.7 Control de Paralelismo: fullyParallel vs. workers (Ejecución Secuencial)](#27-control-de-paralelismo-fullyparallel-vs-workers-ejecución-secuencial)
 3. [Herramientas Interactivas de VS Code e Inspección](#3-herramientas-interactivas-de-vs-code-e-inspección)
    - [3.1 Uso de Pick Locator](#31-uso-de-pick-locator)
    - [3.2 Cómo interactuar y navegar sin cerrar el selector](#32-cómo-interactuar-y-navegar-sin-cerrar-el-selector)
@@ -155,6 +156,56 @@ Por diseño, Playwright cierra automáticamente el contexto y el navegador al te
 2. **Modo Debug:** `npx playwright test --debug`
 3. **Modo UI:** `npx playwright test --ui`
 4. **Esperar cierre manual de ventana:** `await page.waitForEvent('close');`
+
+### 2.7 Control de Paralelismo: fullyParallel vs. workers (Ejecución Secuencial)
+
+Playwright gestiona el paralelismo en dos niveles distintos:
+
+| Configuración en `playwright.config.ts` | Alcance | Comportamiento |
+| :--- | :--- | :--- |
+| **`fullyParallel: false`** | A nivel de archivo | Los tests **dentro del mismo archivo** se ejecutan uno detrás del otro. Sin embargo, distintos archivos de prueba seguirán ejecutándose en paralelo si hay varios workers disponibles. |
+| **`workers: 1`** *(La clave)* | A nivel global de suite | **Elimina todo el paralelismo de raíz**. Hace que Playwright utilice exactamente un solo hilo/proceso: todos los tests de todos los archivos se ejecutarán estrictamente uno a uno en fila india. |
+
+#### El Operador Ternario en `workers`
+En la plantilla inicial de `playwright.config.ts`, la propiedad viene configurada así:
+```typescript
+workers: process.env.CI ? 1 : undefined,
+```
+- **En CI (`process.env.CI` es verdadero):** Usa `1` worker para no saturar el servidor de integración continua.
+- **En local (`undefined`):** Playwright detecta los núcleos de la CPU y lanza la mitad de hilos en paralelo (por ejemplo, 4 u 8 tests a la vez).
+
+#### Cómo forzar ejecución 100% secuencial en local
+Si cambias `undefined` por `1`:
+```typescript
+workers: process.env.CI ? 1 : 1,
+```
+O de forma aún más directa y limpia:
+```typescript
+workers: 1,
+```
+Ambas formas logran exactamente el mismo objetivo: obligar a que Playwright ejecute un solo test a la vez tanto en tu computadora local como en servidores CI.
+
+#### Configuración recomendada completa:
+```typescript
+export default defineConfig({
+  /* 1. Desactiva el paralelismo dentro de cada archivo */
+  fullyParallel: false,
+
+  /* 2. Fuerza un único hilo en toda la ejecución */
+  workers: 1,
+  // ...
+});
+```
+
+#### Alternativas sin modificar el archivo de configuración:
+1. **Por parámetro de Terminal:**
+   ```bash
+   npx playwright test --workers=1
+   ```
+2. **Para un archivo específico con tests dependientes:**
+   ```typescript
+   test.describe.configure({ mode: 'serial' });
+   ```
 
 ---
 
