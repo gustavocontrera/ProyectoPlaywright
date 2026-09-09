@@ -14,8 +14,8 @@ test.beforeAll(async ({ playwright }) => {
             // Configuramos este Header como nos dicen en la docu de GitHub.
             'Accept': 'application/vnd.github.v3+json',
             // Agregamos el token de autorización a todos los requests.
-            // Acá ponemos el token que generamos en GitHub.
-            'Authorization': `token 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`,
+            // Acá ponemos el token que generamos en GitHub - En realidad lo agrego en el archivo .env
+            'Authorization': `token ${process.env.GITHUB_TOKEN}`,
         },
     });
 });

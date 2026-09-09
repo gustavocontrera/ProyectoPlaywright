@@ -5,9 +5,9 @@ import { defineConfig, devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -81,7 +81,7 @@ export default defineConfig({
         baseURL: 'https://api.github.com',
         extraHTTPHeaders: {
           'Accept': 'application/vnd.github.v3+json',
-          'Authorization': `token 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`,
+          'Authorization': `token ${process.env.GITHUB_TOKEN}`,
         }
       }
     },
