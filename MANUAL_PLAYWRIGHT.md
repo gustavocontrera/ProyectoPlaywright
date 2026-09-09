@@ -41,6 +41,7 @@ Este manual consolida todas las consultas, conceptos de arquitectura, comandos, 
    - [6.4 Error de TypeScript `ts(7034)`: Tipado con `APIRequestContext`](#64-error-de-typescript-ts7034-tipado-con-apirequestcontext)
    - [6.5 Problema de CSS bloqueado en tests híbridos (CORS / `net::ERR_FAILED`)](#65-problema-de-css-bloqueado-en-tests-híbridos-cors--neterr_failed)
    - [6.6 Advertencia de seguridad sobre el bloque `afterAll`](#66-advertencia-de-seguridad-sobre-el-bloque-afterall)
+   - [6.7 Gestión Segura de Tokens: Bloqueo de Git (Push Protection) y Variables de Entorno (`.env` con `dotenv`)](#67-gestión-segura-de-tokens-bloqueo-de-git-push-protection-y-variables-de-entorno-env-con-dotenv)
 
 ---
 
@@ -373,6 +374,85 @@ Los sitios web externos (como GitHub o MercadoLibre) actualizan continuamente su
   ```
 - Si el repositorio de pruebas no fue creado dinámicamente como desechable en el `beforeAll`, este método **eliminará de forma permanente el repositorio principal de GitHub**. Mantener siempre comentado o utilizar repositorios temporales aislados.
 
+### 6.7 Gestión Segura de Tokens: Bloqueo de Git (Push Protection) y Variables de Entorno (`.env` con `dotenv`)
+
+#### El Problema: Bloqueo `GH013: Repository rule violations found`
+Al intentar hacer `git push`, GitHub analiza el contenido de los commits mediante su mecanismo de seguridad **GitHub Push Protection (Secret Scanning)**. Si detecta un token real de acceso personal (`ghp_...`) en archivos como `playwright.config.ts` o en los tests, rechaza el push con el siguiente error:
+
+```text
+remote: error: GH013: Repository rule violations found for refs/heads/dev.
+remote: - GITHUB PUSH PROTECTION
+remote:     - Push cannot contain secrets
+remote:       —— GitHub Personal Access Token ——————————————————————
+```
+
+#### Solución Definitiva (Buenas Prácticas): Variables de Entorno con `.env`
+
+1. **Instalar la librería estándar `dotenv`:**
+   ```bash
+   npm install -D dotenv
+   ```
+
+2. **Proteger el archivo en `.gitignore` (Paso obligatorio):**
+   Agregar `.env` al archivo `.gitignore` para que Git ignore el archivo local y nunca intente subirlo:
+   ```gitignore
+   # Variables de entorno locales
+   .env
+   ```
+
+3. **Crear el archivo `.env` en la raíz del proyecto:**
+   Crear el archivo `.env` (al mismo nivel que `package.json` y `playwright.config.ts`) y definir el secreto:
+   ```env
+   GITHUB_TOKEN=ghp_TU_TOKEN_PERSONAL_REAL_AQUI
+   ```
+
+4. **Habilitar la carga de variables en `playwright.config.ts`:**
+   Descomentar las líneas iniciales de configuración en `playwright.config.ts`:
+   ```typescript
+   import dotenv from 'dotenv';
+   import path from 'path';
+   dotenv.config({ path: path.resolve(__dirname, '.env') });
+   ```
+
+5. **Consumir la variable en el código:**
+   Reemplazar cualquier token hardcodeado por `process.env.GITHUB_TOKEN`:
+
+   - **En `playwright.config.ts`:**
+     ```typescript
+     extraHTTPHeaders: {
+       'Accept': 'application/vnd.github.v3+json',
+       'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+     }
+     ```
+
+   - **En tests híbridos (`E2EAPI.spec.ts`):**
+     ```typescript
+     apiContext = await playwright.request.newContext({
+         baseURL: 'https://api.github.com',
+         extraHTTPHeaders: {
+             'Accept': 'application/vnd.github.v3+json',
+             'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+         },
+     });
+     ```
+
+6. **Limpiar el commit bloqueado y subir los cambios:**
+   Una vez reemplazado el token por la variable, enmendar el último commit para sobreescribirlo sin el secreto y hacer el push:
+   ```bash
+   git add .
+   git commit --amend --no-edit
+   git push
+   ```
+
+#### Alternativa Rápida (Solo para entornos de prueba / repositorios desechables):
+Si el token es exclusivamente de prueba y no deseas reescribir el commit, la consola de Git proporciona una URL temporal única de desbloqueo:
+```text
+https://github.com/usuario/repo/security/secret-scanning/unblock-secret/...
+```
+Al ingresar a ese enlace en el navegador y hacer clic en **"Allow secret / Desbloquear"**, GitHub autoriza temporalmente el push para ese hash específico. Sin embargo, **la práctica estándar de la industria es utilizar siempre archivos `.env`**.
+
 ---
 
-*Manual generado automáticamente como compendio del ProyectoPlaywright.*
+*Manual generado automáticamente como compendio del ProyectoPlaywright.
+
+
