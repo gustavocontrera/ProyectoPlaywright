@@ -12,6 +12,10 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+const ahora = new Date();
+const fechaHora = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}_${String(ahora.getHours()).padStart(2, '0')}-${String(ahora.getMinutes()).padStart(2, '0')}-${String(ahora.getSeconds()).padStart(2, '0')}`;
+
 export default defineConfig({
   testDir: './tests',
   /* Run tests in files in parallel */
@@ -23,24 +27,69 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  //reporter: 'html',
+
+// 👉 OPCIÓN 1 (COMENTADA): Reporte único estándar (se sobrescribe siempre en /playwright-report/)
   reporter: [['html', { open: 'always' }]],
+
+  // 👉 OPCIÓN 2 (ACTIVA): Guardar reportes históricos por fecha y hora en /reportes/
+  // reporter: [
+  //   ['html', { 
+  //     outputFolder: `reportes/${fechaHora}`,
+  //     open: 'always' 
+  //   }]
+  // ],
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     headless: false,
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
+    //baseURL: 'https://thefreerangetester.github.io/sandbox-automation-testing/',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    //trace: 'on-first-retry',
+    trace: 'on',
+    //video: 'retain-on-failure',
+    video: 'on',
+
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'Computadora',
+      testMatch: "/*.spec.ts",
       use: { ...devices['Desktop Chrome'] },
     },
+
+    {
+      name: 'Iphone',
+      testMatch: "/*.spec.ts",
+      use: { ...devices['iPhone 12'] },
+    },
+
+    {
+      name: 'iPad',
+      testMatch: "/*.spec.ts",
+      use: { ...devices['iPad (gen 7)'] },
+    },
+
+     {
+      name: 'API Tests',
+      testMatch: 'APITests/**/*',
+      use: {
+        baseURL: 'https://api.github.com',
+        extraHTTPHeaders: {
+          'Accept': 'application/vnd.github.v3+json',
+          'Authorization': `token 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`,
+        }
+      }
+    },
+
+    // {
+    //   name: 'Computadora',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
 
     // {
     //   name: 'firefox',
@@ -79,4 +128,5 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+
 });

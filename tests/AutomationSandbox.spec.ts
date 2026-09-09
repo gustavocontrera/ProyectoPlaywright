@@ -215,7 +215,7 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
             })
 
             await test.step('Puedo validar un elemento dentro del popup', async () => {
-                await expect(page.getByText('¿Viste? ¡Apareció un Pop-up!')).toHaveText('¿Viste? ¡Apareció un Pop-up!');
+                await expect(page.getByText('¿Viste? ¡Apareció un Pop-up!')).toHaveText('¿Viste? ¡Apareció un Pop-upppp!');
                 await page.getByRole('button', { name: 'Cerrar' }).click();
 
             })
@@ -225,4 +225,20 @@ import { SandboxPage } from './Pages/SandboxPage.ts';
 
     })
 
-})();
+    //ANOTACIONES
+    //skip (se ejecuta todo menos estos)
+    //only (se ejecuta solo los only)
+    //test.skip('Puedo hacer un Drag a....
+    //
+    //fixme
+    //test.fixme('Puedo hacer un Drag a....
+    //
+    //para correr los que tienen arroba se agrega:
+    //test('Puedo seleccionar y deseleccionar un checkbox en el @Sandbox'.....
+    //en terminal: npx playwright test --grep @Sandbox
+    //
+    //test.fail (casi igual al test.skip)
+    //
+
+
+})(); 

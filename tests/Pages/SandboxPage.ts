@@ -14,7 +14,8 @@ export class SandboxPage {
         await this.pastaCheckbox.check();
     }
 
-    async verifyPastaChecked() {
-        expect(this.pastaCheckbox).toBeChecked;
-    }
+    //NO AGREGAR VERIFICACIONES EN LAS PAGES
+    // async verifyPastaChecked() {
+    //     expect(this.pastaCheckbox).toBeChecked;
+    // }
 }
